@@ -1,0 +1,258 @@
+ar shanejet;
+var greenplane;
+var hits;
+var redplane;
+var speed;
+
+function math_random_int(a, b) {
+  if (a > b) {
+    // Swap a and b to ensure a is smaller.
+    var c = a;
+    a = b;
+    b = c;
+  }
+  return Math.floor(Math.random() * (b - a + 1) + a);
+}
+
+function west_and_loop(this_sprite) {
+  moveInDirection(this_sprite, 2, "West");
+  if (getProp(this_sprite, "x") < 0) {
+    setProp(this_sprite, "x", 400);
+    setProp(this_sprite, "y", math_random_int(0, 400));
+  }
+}
+
+function west_and_loop_with_speed(this_sprite) {
+  moveInDirection(this_sprite, speed, "West");
+  if (getProp(this_sprite, "x") < 0) {
+    setProp(this_sprite, "x", 400);
+    setProp(this_sprite, "y", math_random_int(0, 400));
+  }
+}
+
+function moving_west(this_sprite) {
+  moveInDirection(this_sprite, 5, "West");
+}
+
+function spinning_right(this_sprite) {
+  turn(this_sprite, 6, "right");
+}
+
+function growing(this_sprite) {
+  changePropBy(this_sprite, "scale", 1);
+}
+
+function swimming_left_and_right(this_sprite) {
+  if (getProp(this_sprite, "direction") == 0) {
+    mirrorSprite(this_sprite, "right");
+  } else if (getProp(this_sprite, "direction") == 180) {
+    mirrorSprite(this_sprite, "left");
+  }
+  moveForward(this_sprite, 5);
+  if (isTouchingEdges(this_sprite)) {
+    edgesDisplace(this_sprite);
+    changePropBy(this_sprite, "direction", 180);
+  }
+}
+
+function moving_east(this_sprite) {
+  moveInDirection(this_sprite, 5, "East");
+}
+
+function moving_north(this_sprite) {
+  moveInDirection(this_sprite, 5, "North");
+}
+
+function patrolling(this_sprite) {
+  moveForward(this_sprite, 5);
+  if (isTouchingEdges(this_sprite)) {
+    edgesDisplace(this_sprite);
+    changePropBy(this_sprite, "direction", 180);
+  }
+}
+
+function moving_south(this_sprite) {
+  moveInDirection(this_sprite, 5, "South");
+}
+
+function jittering(this_sprite) {
+  changePropBy(this_sprite, "scale", math_random_int(-1, 1));
+}
+
+function wandering(this_sprite) {
+  if (math_random_int(0, 5) == 0) {
+    changePropBy(this_sprite, "direction", math_random_int(-25, 25));
+  }
+  moveForward(this_sprite, 1);
+  if (isTouchingEdges(this_sprite)) {
+    edgesDisplace(this_sprite);
+    changePropBy(this_sprite, "direction", math_random_int(135, 225));
+  }
+}
+
+function shrinking(this_sprite) {
+  changePropBy(this_sprite, "scale", -1);
+}
+
+function spinning_left(this_sprite) {
+  turn(this_sprite, 6, "left");
+}
+
+function moving_with_arrow_keys(this_sprite) {
+  if (isKeyPressed("up")) {
+    moveInDirection(this_sprite, 5, "North");
+  }
+  if (isKeyPressed("down")) {
+    moveInDirection(this_sprite, 5, "South");
+  }
+  if (isKeyPressed("left")) {
+    moveInDirection(this_sprite, 5, "West");
+  }
+  if (isKeyPressed("right")) {
+    moveInDirection(this_sprite, 5, "East");
+  }
+}
+
+function driving_with_arrow_keys(this_sprite) {
+  if (isKeyPressed("up")) {
+    moveForward(this_sprite, 5);
+  }
+  if (isKeyPressed("down")) {
+    moveBackward(this_sprite, 5);
+  }
+  if (isKeyPressed("left")) {
+    changePropBy(this_sprite, "direction", -5);
+    changePropBy(this_sprite, "rotation", -5);
+  }
+  if (isKeyPressed("right")) {
+    changePropBy(this_sprite, "direction", 5);
+    changePropBy(this_sprite, "rotation", 5);
+  }
+  if (isTouchingEdges(this_sprite)) {
+    edgesDisplace(this_sprite);
+  }
+}
+
+function fluttering(this_sprite) {
+  changePropBy(this_sprite, "y", math_random_int(-1, 1));
+}
+
+function wobbling(this_sprite) {
+  withPercentChance(50, function () {
+    setProp(this_sprite, "rotation", math_random_int(-1, 1));
+  });
+}
+
+function moving_west_and_looping(this_sprite) {
+  mirrorSprite(this_sprite, "left");
+  moveInDirection(this_sprite, 5, "West");
+  if (getProp(this_sprite, "x") < -50) {
+    setProp(this_sprite, "x", 450);
+  }
+}
+
+function moving_east_and_looping(this_sprite) {
+  mirrorSprite(this_sprite, "right");
+  moveInDirection(this_sprite, 5, "East");
+  if (getProp(this_sprite, "x") > 450) {
+    setProp(this_sprite, "x", -50);
+  }
+}
+
+keyPressed("while", "down", function () {
+  moveInDirection({name: 'shanejet'}, 10, "South");
+  edgesDisplace({name: 'shanejet'});
+});
+
+keyPressed("while", "up", function () {
+  moveInDirection({name: 'shanejet'}, 10, "North");
+  edgesDisplace({name: 'shanejet'});
+});
+
+keyPressed("when", "d", function () {
+  for (var count2 = 0; count2 < 100; count2++) {
+    playSound('Choose');
+    playSound('Choose');
+    for (var count = 0; count < 10000; count++) {
+      playSound('sound://category_background/progression.mp3');
+    }
+  }
+});
+
+keyPressed("while", "space", function () {
+  makeNewSpriteAnon("bulletasset.png_1", locationAt(getProp({name: 'shanejet'}, "x") + 40, getProp({name: 'shanejet'}, "y") + 8));
+  setProp(({costume: "bulletasset.png_1"}), "scale", 30);
+  addBehaviorSimple(({costume: "bulletasset.png_1"}), new Behavior(moving_east, []));
+});
+
+checkTouching("when", ({costume: "bulletasset.png_1"}), {name: 'greenplane'}, function (extraArgs) {
+  destroy(({costume: "bulletasset.png_1"}));
+  moveInDirection({name: 'greenplane'}, 400, "East");
+  setProp({name: 'greenplane'}, "y", math_random_int(50, 350));
+  hits = (typeof hits == 'number' ? hits : 0) + 1;
+  if (hits == 2) {
+    createNewSprite({name: 'redplane'}, "fighterplaneasset.png_1", ({"x":310,"y":193}));
+    setTint({name: 'redplane'}, '#ff0000');
+    setProp({name: 'redplane'}, "scale", 80);
+    mirrorSprite({name: 'redplane'}, "left");
+    addBehaviorSimple({name: 'redplane'}, new Behavior(west_and_loop_with_speed, []));
+  }
+  if (hits > 4) {
+    speed = (typeof speed == 'number' ? speed : 0) + 1;
+  }
+});
+
+checkTouching("when", ({costume: "bulletasset.png_1"}), {name: 'redplane'}, function (extraArgs) {
+  destroy(({costume: "bulletasset.png_1"}));
+  moveInDirection({name: 'redplane'}, 400, "East");
+  setProp({name: 'redplane'}, "y", math_random_int(50, 350));
+  hits = (typeof hits == 'number' ? hits : 0) + 1;
+  if (hits > 4) {
+    speed = (typeof speed == 'number' ? speed : 0) + 1;
+  }
+});
+
+setBackground('#000000');
+playSound('sound://category_background/progression.mp3');
+for (var count3 = 0; count3 < 100; count3++) {
+  makeNewSpriteAnon("animation_1", randomLocation());
+  addBehaviorSimple(({costume: "animation_1"}), new Behavior(west_and_loop, []));
+}
+makeNewSpriteAnon("start-buttonasset.png_1", ({"x":200,"y":200}));
+setProp(({costume: "start-buttonasset.png_1"}), "scale", 300);
+
+spriteClicked("when", ({costume: "start-buttonasset.png_1"}), function (extraArgs) {
+  destroy(({costume: "start-buttonasset.png_1"}));
+  createNewSprite({name: 'shanejet'}, "fighterplaneasset.png_1", ({"x":48,"y":193}));
+  setProp({name: 'shanejet'}, "scale", 80);
+  createNewSprite({name: 'greenplane'}, "fighterplaneasset.png_1", ({"x":330,"y":199}));
+  setProp({name: 'greenplane'}, "scale", 80);
+  setTint({name: 'greenplane'}, '#33cc00');
+  mirrorSprite({name: 'greenplane'}, "left");
+  speed = 5;
+  addBehaviorSimple({name: 'greenplane'}, new Behavior(west_and_loop_with_speed, []));
+  hits = 0;
+});
+
+checkTouching("when", {name: 'shanejet'}, {name: 'redplane'}, function (extraArgs) {
+  playSound('sound://category_explosion/8bit_explosion.mp3');
+  destroy({name: 'redplane'});
+  destroy({name: 'greenplane'});
+  destroy({name: 'shanejet'});
+  makeNewSpriteAnon("start-buttonasset.png_1", ({"x":200,"y":200}));
+  setProp(({costume: "start-buttonasset.png_1"}), "scale", 300);
+});
+
+checkTouching("when", {name: 'shanejet'}, {name: 'greenplane'}, function (extraArgs) {
+  playSound('sound://category_explosion/8bit_explosion.mp3');
+  destroy({name: 'redplane'});
+  destroy({name: 'greenplane'});
+  destroy({name: 'shanejet'});
+  makeNewSpriteAnon("start-buttonasset.png_1", ({"x":200,"y":200}));
+  setProp(({costume: "start-buttonasset.png_1"}), "scale", 300);
+});
+
+checkTouching("when", {name: 'greenplane'}, {name: 'redplane'}, function (extraArgs) {
+  moveInDirection({name: 'greenplane'}, 400, "North");
+});
+OK
